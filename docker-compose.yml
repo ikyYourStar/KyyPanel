@@ -26,7 +26,7 @@ x-common:
     MAIL_USERNAME: ""
     MAIL_PASSWORD: ""
     MAIL_ENCRYPTION: "true"
-
+ 
 #
 # ------------------------------------------------------------------------------------------
 # DANGER ZONE BELOW
