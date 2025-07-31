@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasil Download - Facebook Video Downloader</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #6dd5ed, #2193b0);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: #fff;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 30px;
+            box-sizing: border-box;
+            text-align: center;
+            position: relative; /* Penting untuk posisi tombol hamburger */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                border-radius: 0;
+                min-height: 100vh; /* Ambil tinggi penuh di mobile */
+                max-width: none; /* Ambil lebar penuh di mobile */
+                width: 100vw;
+            }
+            body {
+                padding: 0;
+            }
+        }
+
+        .header-section {
+            margin-bottom: 25px;
+        }
+
+        .header-section h2 {
+            color: #2193b0;
+            font-size: 1.8em;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .header-section p {
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        .video-thumbnail {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .download-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: left;
+        }
+
+        .download-list li {
+            background-color: #e0f7fa;
+            border: 1px solid #a0d9e9;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1em;
+            color: #333;
+        }
+
+        .download-list li a {
+            background-color: #2193b0;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .download-list li a:hover {
+            background-color: #1a7b93;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 10px 25px;
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .back-button:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-1px);
+        }
+
+        /* --- SIDEBAR STYLES (MATCHING public/index.html) --- */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0; /* Dari kanan */
+            width: 250px;
+            height: 100%;
+            background-color: #fff;
+            padding: 20px;
+            box-sizing: border-box;
+            border-left: 1px solid #eee; /* Border kiri */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: translateX(100%); /* Sembunyikan ke kanan */
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        body.sidebar-open .sidebar {
+            transform: translateX(0);
+        }
+
+        .sidebar h2 {
+            color: #2193b0;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .sidebar .sidebar-buttons {
+            width: 100%;
+        }
+
+        .sidebar .sidebar-buttons button {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background-color: #e0f7fa;
+            color: #2193b0;
+            border: 1px solid #a0d9e9;
+            border-radius: 6px;
+            text-align: left;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .sidebar .sidebar-buttons button:hover {
+            background-color: #2193b0;
+            color: white;
+        }
+
+        /* --- OVERLAY STYLES --- */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        body.sidebar-open .overlay {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* --- HAMBURGER BUTTON (NEW POSITION) --- */
+        .hamburger-button {
+            position: absolute;
+            top: 15px;
+            right: 15px; /* Pindahkan ke kanan */
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            color: #2193b0;
+            cursor: pointer;
+            z-index: 10;
+            padding: 5px;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        body.sidebar-open .hamburger-button {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .hamburger-button:hover {
+            color: #1a7b93;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay"></div>
+
+    <div class="sidebar" id="sidebar">
+      <h2>Menu</h2>
+      <div class="sidebar-buttons">
+        <button onclick="window.location.href='example.com/link1';">
+          <i class="fas fa-link"></i> Example 1
+        </button>
+        <button onclick="window.location.href='example.com/link2';">
+          <i class="fas fa-link"></i> Example 2
+        </button>
+        <button onclick="window.location.href='example.com/link3';">
+          <i class="fas fa-link"></i> Example 3
+        </button>
+        <button onclick="window.location.href='example.com/link4';">
+          <i class="fas fa-link"></i> Example 4
+        </button>
+        <button onclick="window.location.href='example.com/link5';">
+          <i class="fas fa-link"></i> Example 5
+        </button>
+      </div>
+    </div>
+    <div class="container">
+        <button class="hamburger-button" id="hamburgerButton">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="header-section">
+            <h2>Hasil Download</h2>
+            <p><b>Judul:</b> <%= title %></p>
+        </div>
+
+        <% if (preview) { %>
+            <img src="<%= preview %>" alt="Video Thumbnail" class="video-thumbnail">
+        <% } %>
+
+        <% if (results && results.length > 0) { %>
+            <ul class="download-list">
+                <% results.forEach(function(vid) { %>
+                    <li>
+                        <%= vid.quality %> - <%= vid.type %>
+                        <a href="<%= vid.url %>" target="_blank">Download</a>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } else { %>
+            <p>Tidak ada tautan download yang ditemukan atau video bersifat pribadi.</p>
+        <% } %>
+
+        <a href="/" class="back-button">Kembali</a>
+    </div>
+
+    <script>
+        const body = document.body;
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("overlay");
+        const hamburgerButton = document.getElementById("hamburgerButton");
+
+        function openSidebar() {
+            body.classList.add("sidebar-open");
+            hamburgerButton.style.opacity = '0';
+            hamburgerButton.style.visibility = 'hidden';
+            hamburgerButton.style.pointerEvents = 'none';
+        }
+
+        function closeSidebar() {
+            body.classList.remove("sidebar-open");
+            hamburgerButton.style.opacity = '1';
+            hamburgerButton.style.visibility = 'visible';
+            hamburgerButton.style.pointerEvents = 'auto';
+        }
+
+        hamburgerButton.addEventListener("click", openSidebar);
+        overlay.addEventListener("click", closeSidebar);
+    </script>
+</body>
+</html>
